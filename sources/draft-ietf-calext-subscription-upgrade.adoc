@@ -4,10 +4,10 @@
 :status: standard
 :ipr: trust200902
 :updates: 5988,7240
-:submissionType: IETF
+:submission-type: IETF
 :area: Internet
 :intended-series: full-standard
-:revdate: 2019-06-07T00:00:00Z
+:revdate: 2019-06-07
 :fullname: Michael Douglass
 :lastname: Douglass
 :forename_initials: M.
@@ -20,7 +20,7 @@
 :email: mdouglass@sphericalcowgroup.com
 :docfile: draft-ietf-calext-subscription-upgrade.adoc
 :mn-document-class: ietf
-:mn-output-extensions: xmlrfc2,txt,html
+:mn-output-extensions: rfc,xml,txt,html
 :technical-committee: TC Freebusy
 
 include::sections/00-abstract.adoc[]
