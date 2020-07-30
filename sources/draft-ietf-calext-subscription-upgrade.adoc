@@ -1,6 +1,6 @@
 = Calendar subscription upgrades
 :doctype: internet-draft
-:name: draft-ietf-calext-subscription-upgrade-02
+:docnumber: draft-ietf-calext-subscription-upgrade-02
 :status: standard
 :ipr: trust200902
 :updates: 5988,7240
