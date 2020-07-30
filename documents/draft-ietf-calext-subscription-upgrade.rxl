@@ -1,0 +1,60 @@
+<bibdata type="standard">
+<title language="en" format="text/plain" type="main">Calendar subscription upgrades</title>
+<uri>http://bedework.com</uri>
+<docidentifier>draft-ietf-calext-subscription-upgrade-02</docidentifier>
+<docnumber>draft-ietf-calext-subscription-upgrade-02</docnumber>
+<contributor>
+<role type="author"/>
+<person>
+<name>
+<completename>Michael Douglass</completename>
+</name>
+<email>mdouglass@bedework.com</email>
+</person>
+</contributor>
+<contributor>
+<role type="publisher"/>
+<organization>
+<name>Internet Engineering Task Force</name>
+<abbreviation>IETF</abbreviation>
+</organization>
+</contributor>
+<version>
+<revision-date>2020-07-28</revision-date>
+</version>
+<language>en</language>
+<script>Latn</script>
+<status>
+<stage>standard</stage>
+</status>
+<copyright>
+<from>2020</from>
+<owner>
+<organization>
+<name>Internet Engineering Task Force</name>
+<abbreviation>IETF</abbreviation>
+</organization>
+</owner>
+</copyright>
+<relation type="updates">
+<bibitem>
+<title>7240</title>
+<docidentifier>5988</docidentifier>
+</bibitem>
+</relation>
+<series type="stream">
+<title>IETF</title>
+</series>
+<series type="intended">
+<title>full-standard</title>
+</series>
+<ext>
+<doctype>internet-draft</doctype>
+<area>Internet</area>
+<ipr>trust200902</ipr>
+<consensus>true</consensus>
+<pi>
+<toc>yes</toc>
+</pi>
+</ext>
+</bibdata>
