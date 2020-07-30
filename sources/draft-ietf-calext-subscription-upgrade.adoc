@@ -3,6 +3,7 @@
 :docnumber: draft-ietf-calext-subscription-upgrade-02
 :status: standard
 :ipr: trust200902
+:consensus: true
 :updates: 5988,7240
 :submission-type: IETF
 :area: Internet
