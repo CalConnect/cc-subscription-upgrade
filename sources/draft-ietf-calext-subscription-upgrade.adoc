@@ -20,7 +20,7 @@
 :email: mdouglass@bedework.com
 :docfile: draft-ietf-calext-subscription-upgrade.adoc
 :mn-document-class: ietf
-:mn-output-extensions: xmlrfc2,txt,html,nits
+:mn-output-extensions: rfc,txt,html,rxl,xml
 :technical-committee: TC Freebusy
 
 include::sections/00-abstract.adoc[]
