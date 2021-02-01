@@ -10,3 +10,4 @@ csd-*_files
 
 # Deploy key
 deploy_key
+/.idea
