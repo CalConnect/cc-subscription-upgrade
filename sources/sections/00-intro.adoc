@@ -23,6 +23,6 @@ Given that many clients and servers already support CalDAV this provides an easy
 upgrade path for those clients. Additionally an enhanced GET protocol is specified
 here to allow a light weight implementation.
 
-The use of subscription upgtafe may help reduce load on servers, but perhaps
-more inportantly it allows mobile devices to use a more efficient update
-mechanism reducing data tranferred and presumably improving battery life.
+The use of subscription upgrade may help reduce load on servers, but perhaps
+more importantly it allows mobile devices to use a more efficient update
+mechanism reducing data transferred and presumably improving battery life.
