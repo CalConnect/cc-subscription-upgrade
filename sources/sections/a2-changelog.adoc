@@ -18,7 +18,7 @@ v04 2019-03-07 MD
 
 * Examples
 
-* More text for extended get.  Talk about deletions.
+* More text for extended get. Talk about deletions.
 
 v01 2017-02-17 MD
 

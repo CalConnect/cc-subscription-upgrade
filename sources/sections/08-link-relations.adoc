@@ -9,15 +9,15 @@ facilitate subscription upgrades.
 === subscribe-caldav
 
 This specifies an access point which is a full implementation of
-caldav but requires no authentication.  The end point allows the full
+caldav but requires no authentication. The end point allows the full
 range of reports as defined by the CalDAV specification.
 
 The client MUST follow the specification to determine exactly what
 operations are allowed on the access point - for example to determine
-if sync-report is supported.
+if DAV:sync-collection is supported.
 
 The URL MAY include some form of token to allow write access to the
-targeted collection.  The client must check it's permissions to
+targeted collection. The client must check its permissions to
 determine whether or not it has been granted write access.
 
 
@@ -26,12 +26,12 @@ determine whether or not it has been granted write access.
 
 
 This specifies an access point which is a full implementation of
-caldav and requires authentication.  This may allow read-write access
+caldav and requires authentication. This may allow read-write access
 to the resource.
 
 The client MUST follow the specification to determine exactly what
 operations are allowed on the access point -- for example to determine
-if sync-report is supported.
+if DAV:sync-collection is supported.
 
 
 [[la-subscribe-webdav-sync]]
@@ -39,11 +39,10 @@ if sync-report is supported.
 
 This specifies an access point which supports only webdav sync.
 
-This allows the client to issue a sync-report on the resource to
+This allows the client to issue a DAV:sync-collection report on the resource to
 obtain updates.
 
 The client MUST follow that specification.
-
 
 
 [[la-subscribe-enhanced-get]]

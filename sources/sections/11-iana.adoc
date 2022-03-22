@@ -36,8 +36,8 @@ Reference:: this document
 
 === Link Relation Registrations
 
-This document defines the following new iCalendar properties to be
-added to the registry defined in <<RFC5545,section=8.2.3>>:
+The following link relation values have been added to
+the Reference Types Registry defined in <<RFC8288,section=6.2.2>>:
 
 [cols="a,a,a",options=header]
 |===

@@ -15,7 +15,7 @@ is passed as a Sync-Token header field.
 
 The resource is treated as a set of individual events each of which
 may be updated or deleted separately. The client will first fetch
-the entire iCalendar file.  On subsequent requests it uses the Prefer
+the entire iCalendar file. On subsequent requests it uses the Prefer
 header field and a Sync-Token header field to indicate that it wants a set
 of changes since the last fetch.
 
@@ -29,19 +29,19 @@ In both cases the server should set the Preference-Applied header field and a ne
 
 When an entity (VEVENT, VTODO or other valid top-level component) is
 deleted from the source data the server needs to be able to inform a
-client of the deletion.  This specification introduces a new value
+client of the deletion. This specification introduces a new value
 for the STATUS property of DELETED.
 
 On the first enhanced GET after the entity has been deleted a
 skeleton, but valid, entity will be returned with STATUS: DELETED.
-The receiving client is free to remove the entity or update it's
+The receiving client is free to remove the entity or update its
 STATUS property.
 
 On subsequent fetches the entity will not be returned.
 
 === Handling of invalid sync tokens
 
-When a server receives an invalid token it MUST return a 409 status (Conflict).  The server MAY choose to return an error
+When a server receives an invalid token it MUST return a 409 status (Conflict). The server MAY choose to return an error
 message in the body.
 
 The client SHOULD respond to this error by restarting the interaction
@@ -55,7 +55,7 @@ by specifying the Prefer header field preference "limit=n" where n is
 the number of components.
 
 When a server receives a request specifying such a limit it SHOULD
-limit the response to that number of components.  If the limit causes
+limit the response to that number of components. If the limit causes
 a truncation in the response the server should respond with a
 Preference-Applied header specifying the limit that was applied
 and return a sync token which may be used to retrieve the next batch of data.
@@ -63,7 +63,7 @@ and return a sync token which may be used to retrieve the next batch of data.
 This allows the client to immediately resubmit a
 request for the next batch using the updated token.
 
-A server MAY choose to limit the response size.  The behavior SHOULD
+A server MAY choose to limit the response size. The behavior SHOULD
 be as if the client had provided a preference for that size -
 allowing the client to retrieve the full set of data in batches.
 
@@ -184,8 +184,8 @@ changes have occurred.
     Preference-Applied: subscribe-enhanced-get
 
     BEGIN:VCALENDAR:
-    ...  only new/changed events
-    ...  deleted events have STATUS:DELETED
+    ... only new/changed events
+    ... deleted events have STATUS:DELETED
     END:VCALENDAR
 ----
 --

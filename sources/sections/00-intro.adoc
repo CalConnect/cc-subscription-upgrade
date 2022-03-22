@@ -7,14 +7,14 @@ often published as a resource accessible using the unofficial
 'webcal' scheme.
 
 The only available option for updating that resource is the usual
-HTTP polling of cached resources using Etags.
+HTTP polling of cached resources using Etags or Last-Modified.
 
 There is the usual tension between clients wishing to see a timely
 response to changes and servers not wishing to be overloaded by
 frequent requests for possibly large amounts of data.
 
 This specification introduces an approach whereby clients can
-discover a more performant access method.  Given the location of the
+discover a more performant access method. Given the location of the
 resource as an iCalendar file, the client can perfom a HEAD request on the
 resource and inspect the returned headers which will offer a number
 of alternative access methods.

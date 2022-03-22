@@ -21,12 +21,12 @@ Conformance::  This property can be specified once in "VEVENT",
 
 Description::  In a group-scheduled calendar component, the property
   is used by the "Organizer" to provide a confirmation of the event
-  to the "Attendees".  For example in a "VEVENT" calendar component,
+  to the "Attendees". For example in a "VEVENT" calendar component,
   the "Organizer" can indicate that a meeting is tentative,
-  confirmed, or cancelled.  In a "VTODO" calendar component, the
+  confirmed, or cancelled. In a "VTODO" calendar component, the
   "Organizer" can indicate that an action item needs action, is
   completed, is in process or being worked on, or has been
-  cancelled.  In a "VJOURNAL" calendar component, the "Organizer"
+  cancelled. In a "VJOURNAL" calendar component, the "Organizer"
   can indicate that a journal entry is draft, final, or has been
   cancelled or removed.
 

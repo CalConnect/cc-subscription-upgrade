@@ -2,7 +2,7 @@
 == Discovering alternative access methods
 
 The advertising of other access points is achieved through the use of
-the LINK header as defined in <<RFC5988>>.  New link relation types are
+the LINK header as defined in <<RFC8288>>. New link relation types are
 defined in this specification - each being associated with a protocol
 or protocol subset.
 
