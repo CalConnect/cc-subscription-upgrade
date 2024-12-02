@@ -15,7 +15,7 @@ In particular the different approval criteria needed for the different
 types of CalConnect documents should be noted. This document was drafted in
 accordance with the editorial rules of the CalConnect Directives.
 
-Attention is drawn to the possibility that some of the elements of this
+Attention is drawn to the possibility that some elements of this
 document may be the subject of patent rights. CalConnect shall not be
 held responsible for identifying any or all such patent rights. Details
 of any patent rights identified during the development of the document

@@ -6,7 +6,7 @@
 This is a lightweight protocol which allows simple clients to
 efficiently discover and download changes in the targeted resource.
 
-It has many similarities to WebDAV sync and for a server could be
+It has many similarities to <<RFC6578>> WebDAV sync and for a server could be
 implemented as an extension of the specification.
 
 In this protocol the client MUST include the Prefer header field
@@ -14,23 +14,38 @@ preference "subscribe-enhanced-get". If a sync token is available it
 is passed as a Sync-Token header field.
 
 The resource is treated as a set of individual events each of which
-may be updated or deleted separately. The client will first fetch
+may be updated or deleted separately. Note that a recurring event and
+its overrides are treated as a single entity. The client will first fetch
 the entire iCalendar file. On subsequent requests it uses the Prefer
 header field and a Sync-Token header field to indicate that it wants a set
 of changes since the last fetch.
 
-If no Sync-Token header field is supplied the server SHOULD
-respond with a full set of data. Otherwise, if the token is valid, it SHOULD return with a set of changed entities.
+If no Sync-Token header field is supplied the server MUST
+respond with a full set of data and SHOULD set the Preference-Applied header
+field and a new Sync-Token header field value.
 
-In both cases the server should set the Preference-Applied header field and a new Sync-Token header field value.
+If the token is valid, it SHOULD return with a set of changed entities
+and MUST set the Preference-Applied header field and a new Sync-Token header field value.
 
+When a server receives an invalid token it MUST return a 409 status (Conflict).
+The server MAY choose to return an error message in the body.
 
+The client MUST respond to this error by discarding the cached data
+and restarting the interaction
+from scratch, i.e. retrieve the full set of data then poll for
+updates.
+
+In the absence of a Prefer header field, the server MAY include the
+Sync-Token header field. This can act as a signal to the client that
+the server supports the enhanced-get protocol.
+
+[#enhanced-get-deletion]
 === Deletions
 
 When an entity (VEVENT, VTODO or other valid top-level component) is
 deleted from the source data the server needs to be able to inform a
 client of the deletion. This specification introduces a new value
-for the STATUS property of DELETED.
+"DELETED" for the <<RFC5545,section=3.8.1.11>> STATUS property.
 
 On the first enhanced GET after the entity has been deleted a
 skeleton, but valid, entity will be returned with STATUS: DELETED.
@@ -39,14 +54,11 @@ STATUS property.
 
 On subsequent fetches the entity will not be returned.
 
-=== Handling of invalid sync tokens
-
-When a server receives an invalid token it MUST return a 409 status (Conflict). The server MAY choose to return an error
-message in the body.
-
-The client SHOULD respond to this error by restarting the interaction
-from scratch, i.e. retrieve the full set of data then poll for
-updates.
+As noted above, the skeleton entity returned must be a valid component
+as defined by the specifications. For example, a VEVENT MUST contain the
+DTSTAMP, DTSTART and UID properties as well as the STATUS: DELETED property.
+The DTSTAMP and DTSTART may be generated and the UID MUST be the UID
+of the deleted entity.
 
 === Paging the response
 
@@ -63,21 +75,21 @@ and return a sync token which may be used to retrieve the next batch of data.
 This allows the client to immediately resubmit a
 request for the next batch using the updated token.
 
-A server MAY choose to limit the response size. The behavior SHOULD
+A server MAY choose to limit the response size. The behavior MUST
 be as if the client had provided a preference for that size -
 allowing the client to retrieve the full set of data in batches.
+
+Note that the process above assumes that the current position in the
+resource is encoded in some way within the sync token.
 
 === Caching of responses
 
 To enable proper caching of responses the server SHOULD provide a
-VARY header field in responses that names the Prefer and Sync-Token header fields
+Vary header field defined in <<RFC7231,section=7.1.4>> in responses
+that names the Prefer and Sync-Token header fields
 along with any other that are appropriate.
 
-Clients should order the preferences as following so that
-identical responses can be identified:
-
-  * subscribe-enhanced-get
-  * limit
+See <<RFC7240,section=2>> for a brief comment on use of Vary and Prefer.
 
 === Examples
 

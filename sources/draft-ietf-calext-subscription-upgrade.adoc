@@ -1,6 +1,6 @@
 = Calendar subscription upgrades
 :doctype: internet-draft
-:docnumber: draft-ietf-calext-subscription-upgrade-06
+:docnumber: draft-ietf-calext-subscription-upgrade-12
 :status: standard
 :ipr: trust200902
 :consensus: true
@@ -8,7 +8,7 @@
 :submission-type: IETF
 :area: Internet
 :intended-series: full-standard
-:revdate: 2022-03-22
+:revdate: 2024-12-01
 :fullname: Michael Douglass
 :lastname: Douglass
 :forename_initials: M.
@@ -37,14 +37,12 @@ include::sections/06-prefer-header.adoc[]
 include::sections/08-link-relations.adoc[]
 include::sections/09-security.adoc[]
 include::sections/10-privacy.adoc[]
-include::sections/11-iana.adoc[]
+include::sections/100-iana.adoc[]
 
 // TODO MD: acknowledgements should be in appendix
-include::sections/12-acknowledgements.adoc[]
+include::sections/120-acknowledgements.adoc[]
 
 // must give references before appendix!
 
 include::sections-ietf/98-references.adoc[]
 
-include::sections/a1-open-issues.adoc[]
-include::sections/a2-changelog.adoc[]

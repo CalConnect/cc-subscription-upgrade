@@ -1,7 +1,0 @@
-
-[#appendix-a]
-[appendix,obligation=informative]
-== Open issues
-
-Vary::
-  Ensure we get that right.

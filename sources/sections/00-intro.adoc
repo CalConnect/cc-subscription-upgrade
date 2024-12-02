@@ -2,12 +2,12 @@
 [#introduction]
 == Introduction
 
-Currently clients subscribe to calendar feeds as an iCalendar file which is
+Currently, clients subscribe to calendar feeds as an iCalendar file which is
 often published as a resource accessible using the unofficial
-'webcal' scheme.
+'webcal' URI scheme.
 
 The only available option for updating that resource is the usual
-HTTP polling of cached resources using Etags or Last-Modified.
+HTTP polling of cached resources using <<RFC9110,section=8.8.2>> Last-Modified or <<RFC9110,section=8.8.3>> Etag.
 
 There is the usual tension between clients wishing to see a timely
 response to changes and servers not wishing to be overloaded by
@@ -15,14 +15,14 @@ frequent requests for possibly large amounts of data.
 
 This specification introduces an approach whereby clients can
 discover a more performant access method. Given the location of the
-resource as an iCalendar file, the client can perfom a HEAD request on the
+resource as an iCalendar file, the client can perform a HEAD request on the
 resource and inspect the returned headers which will offer a number
 of alternative access methods.
 
 Given that many clients and servers already support CalDAV this provides an easy
-upgrade path for those clients. Additionally an enhanced GET protocol is specified
-here to allow a light weight implementation.
+upgrade path for those clients. Additionally, an enhanced GET protocol is specified
+here to allow a lightweight implementation.
 
 The use of subscription upgrade may help reduce load on servers, but perhaps
 more importantly it allows mobile devices to use a more efficient update
-mechanism reducing data transferred and presumably improving battery life.
+mechanism, reducing data transferred and presumably improving battery life.

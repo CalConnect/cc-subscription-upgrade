@@ -5,7 +5,7 @@ the enhanced GET method.
 
 [source]
 ----
-    Accept = DQUOTE URI DQUOTE
+    Sync-Token = DQUOTE URI DQUOTE
 ----
 
 The value MUST be a URI. This will generally be a data URI

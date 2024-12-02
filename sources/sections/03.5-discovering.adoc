@@ -27,7 +27,7 @@ that supports the enhanced GET method.
 
     HTTP/1.1 200 OK
     Content-Length: xxxx
-    Link: <http://example.com/subscribe/events.ics>;
+    Link: <https://example.com/subscribe/events.ics>;
                  rel="subscribe-enhanced-get"
 
 ----

@@ -18,7 +18,7 @@ if DAV:sync-collection is supported.
 
 The URL MAY include some form of token to allow write access to the
 targeted collection. The client must check its permissions to
-determine whether or not it has been granted write access.
+determine whether it has been granted write access.
 
 
 [[la-subscribe-caldav-auth]]
@@ -48,7 +48,8 @@ The client MUST follow that specification.
 [[la-subscribe-enhanced-get]]
 === subscribe-enhanced-get
 
-This specifies an access point which supports something new.
+This specifies an access point which supports the enhanced GET protocol
+defined in <<enhanced-get>>.
 
-The client MUST follow that specification.
+The client and server MUST follow the protocol as defined in <<enhanced-get>>.
 
