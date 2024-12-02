@@ -1,0 +1,1286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ietf-standard xmlns="https://www.metanorma.org/ns/ietf" type="semantic" version="3.4.0" schema-version="v1.4.0">
+<bibdata type="standard">
+<title language="en" format="text/plain" type="main">Calendar subscription upgrades</title>
+<uri>http://bedework.com</uri><docidentifier primary="true">draft-ietf-calext-subscription-upgrade-12</docidentifier><docnumber>draft-ietf-calext-subscription-upgrade-12</docnumber><contributor><role type="author"/><person>
+<name><completename>Michael Douglass</completename></name>
+<email>mdouglass@bedework.com</email></person></contributor><contributor><role type="publisher"/><organization>
+<name>Internet Engineering Task Force</name>
+<abbreviation>IETF</abbreviation></organization></contributor><version><revision-date>2024-12-01</revision-date></version><language>en</language><script>Latn</script><status><stage>standard</stage></status><copyright><from>2024</from><owner><organization>
+<name>Internet Engineering Task Force</name>
+<abbreviation>IETF</abbreviation></organization></owner></copyright><relation type="updates"><bibitem>
+<title>--</title>
+<docidentifier>5545</docidentifier></bibitem>
+</relation><series type="stream">
+<title>IETF</title>
+</series><series type="intended">
+<title>full-standard</title>
+</series><ext><doctype>internet-draft</doctype><flavor>ietf</flavor><area>Internet</area><ipr>trust200902</ipr><consensus>true</consensus><pi><tocinclude>yes</tocinclude></pi></ext></bibdata><metanorma-extension><presentation-metadata><name>TOC Heading Levels</name><value>2</value></presentation-metadata><presentation-metadata><name>HTML TOC Heading Levels</name><value>2</value></presentation-metadata><presentation-metadata><name>DOC TOC Heading Levels</name><value>2</value></presentation-metadata><presentation-metadata><name>PDF TOC Heading Levels</name><value>2</value></presentation-metadata></metanorma-extension>
+<preface><foreword id="_fa494f4f-921c-aa68-e3fe-38cddf5cf597" obligation="informative">
+<title>Foreword</title>
+
+<p id="_ff36581b-9ad7-7647-aca4-bd2ab03503f1">This specification updates RFC5545 to add the value DELETED to the STATUS property.</p>
+
+<p id="_2b86dd8c-0d55-541b-79b3-3494a388a099">This specification also adds values to the Preferences Registry defined in RFC7240 to add the subscribe-enhanced-get and limit preferences and to the link relations directory defined in RFC8288.</p>
+</foreword></preface><sections>
+<clause id="introduction" inline-header="false" obligation="normative">
+<title>Introduction</title>
+<p id="_d7ee5c60-c89e-70cf-19ce-9d02e383c30c">Currently, clients subscribe to calendar feeds as an iCalendar file which is often published as a resource accessible using the unofficial 'webcal' URI scheme.</p>
+
+<p id="_212c4fe6-e448-0395-eb3f-e4be9a821ca6">The only available option for updating that resource is the usual HTTP polling of cached resources using  <eref type="inline" bibitemid="RFC9110" citeas="RFC 9110"><localityStack><locality type="section"><referenceFrom>8.8.2</referenceFrom></locality></localityStack></eref> Last-Modified or <eref type="inline" bibitemid="RFC9110" citeas="RFC 9110"><localityStack><locality type="section"><referenceFrom>8.8.3</referenceFrom></locality></localityStack></eref> Etag.</p>
+
+<p id="_876c2037-478e-7937-6122-2b430caffb72">There is the usual tension between clients wishing to see a timely response to changes and servers not wishing to be overloaded by frequent requests for possibly large amounts of data.</p>
+
+<p id="_989e07f5-c376-1482-1cb1-73e7ab7af04a">This specification introduces an approach whereby clients can discover a more performant access method. Given the location of the resource as an iCalendar file, the client can perform a HEAD request on the resource and inspect the returned headers which will offer a number of alternative access methods.</p>
+
+<p id="_2c2192c1-30ea-4fbe-6da5-32134c5e253b">Given that many clients and servers already support CalDAV this provides an easy upgrade path for those clients. Additionally, an enhanced GET protocol is specified here to allow a lightweight implementation.</p>
+
+<p id="_68a994cc-f8ac-6a53-6445-19913b48b586">The use of subscription upgrade may help reduce load on servers, but perhaps more importantly it allows mobile devices to use a more efficient update mechanism, reducing data transferred and presumably improving battery life.</p>
+
+<clause id="conventions" inline-header="false" obligation="normative">
+<title>Terms and Definitions</title>
+<p id="_2e835703-5dbc-1609-2be1-14ab8cc3772e">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14  <eref type="inline" bibitemid="RFC2119" citeas="RFC 2119"/> <eref type="inline" bibitemid="RFC8174" citeas="RFC 8174"/> when, and only when, they appear in all capitals, as shown here.</p>
+
+<p id="_cc435b43-7edd-a6b0-a667-46f93028e2d5">Additionally, the rule for URI is included from <eref type="inline" bibitemid="RFC3986" citeas="RFC 3986"/>.</p>
+</clause>
+</clause>
+
+<clause id="_discovering_alternative_access_methods" inline-header="false" obligation="normative">
+<title>Discovering alternative access methods</title>
+<p id="_2e719b28-7f79-b2db-fbdc-62f92daf2dde">The advertising of other access points is achieved through the use of the LINK header as defined in  <eref type="inline" bibitemid="RFC8288" citeas="RFC 8288"/>. New link relation types are defined in this specification - each being associated with a protocol or protocol subset.</p>
+
+<p id="_4cf8a8db-44f2-a9af-db05-c92e28546b37">These LINK headers will be delivered when a client carries out a HEAD request targeting the URL of the resource.</p>
+
+<example id="_ba04b1cb-ae55-658c-6c24-84cedb750b69"><p id="_f7b212af-748d-099c-48f7-03b2fbc937bd">This is an example of a HEAD request and the response from a server that supports the enhanced GET method.</p>
+
+<sourcecode id="_9bea9952-e07b-d7db-df7b-c4fa5bc46f38">    &gt;&gt; Request &lt;&lt;
+
+    HEAD /caldata/events.ics HTTP/1.1
+    Host: example.com
+    Accept: text/calendar
+
+    &gt;&gt; Response &lt;&lt;
+
+    HTTP/1.1 200 OK
+    Content-Length: xxxx
+    Link: &lt;https://example.com/subscribe/events.ics&gt;;
+                 rel="subscribe-enhanced-get"</sourcecode>
+
+</example>
+
+<p id="_7bea5450-1d19-0038-e1a3-d11f0e419a49">Note that the target for an upgraded service may be the same as for the initial resource.</p>
+</clause>
+
+<clause id="enhanced-get" inline-header="false" obligation="normative">
+<title>Enhanced GET</title>
+<clause id="_general" inline-header="false" obligation="normative">
+<title>General</title>
+<p id="_8abec8ba-820e-3e7b-e294-481058692893">This is a lightweight protocol which allows simple clients to efficiently discover and download changes in the targeted resource.</p>
+
+<p id="_d650f93c-570a-2b31-2f30-369c8329f828">It has many similarities to <eref type="inline" bibitemid="RFC6578" citeas="RFC 6578"/> WebDAV sync and for a server could be implemented as an extension of the specification.</p>
+
+<p id="_37d5f8a3-d04c-0811-f5b4-8c06f37830cc">In this protocol the client MUST include the Prefer header field preference "subscribe-enhanced-get". If a sync token is available it is passed as a Sync-Token header field.</p>
+
+<p id="_568c8ee1-9dab-4e25-c59c-6428a124f65e">The resource is treated as a set of individual events each of which may be updated or deleted separately. Note that a recurring event and its overrides are treated as a single entity. The client will first fetch the entire iCalendar file. On subsequent requests it uses the Prefer header field and a Sync-Token header field to indicate that it wants a set of changes since the last fetch.</p>
+
+<p id="_7cf8e9a2-2216-7923-1ea3-18973089c4f6">If no Sync-Token header field is supplied the server MUST respond with a full set of data and SHOULD set the Preference-Applied header field and a new Sync-Token header field value.</p>
+
+<p id="_e5044f35-5c69-d9d8-a4e4-896f66edf8cb">If the token is valid, it SHOULD return with a set of changed entities and MUST set the Preference-Applied header field and a new Sync-Token header field value.</p>
+
+<p id="_d607662b-5d77-5a9b-61f0-74251700ecd8">When a server receives an invalid token it MUST return a 409 status (Conflict). The server MAY choose to return an error message in the body.</p>
+
+<p id="_1f9c6448-8523-48ae-97bc-d5bcf9855297">The client MUST respond to this error by discarding the cached data and restarting the interaction from scratch, i.e. retrieve the full set of data then poll for updates.</p>
+
+<p id="_56dffc73-417c-bad0-9d02-fa17abc2384d">In the absence of a Prefer header field, the server MAY include the Sync-Token header field. This can act as a signal to the client that the server supports the enhanced-get protocol.</p>
+</clause>
+
+<clause id="enhanced-get-deletion" inline-header="false" obligation="normative">
+<title>Deletions</title>
+<p id="_6ce1d698-1193-aa62-c5db-955d65d25e3b">When an entity (VEVENT, VTODO or other valid top-level component) is deleted from the source data the server needs to be able to inform a client of the deletion. This specification introduces a new value "DELETED" for the  <eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref> STATUS property.</p>
+
+<p id="_ba50b671-6fc7-d836-18fc-ce6c993081ec">On the first enhanced GET after the entity has been deleted a skeleton, but valid, entity will be returned with STATUS: DELETED. The receiving client is free to remove the entity or update its STATUS property.</p>
+
+<p id="_9d2fddbe-fbb0-6b65-ff7a-bf4074ade171">On subsequent fetches the entity will not be returned.</p>
+
+<p id="_4c1dce8e-5740-0c48-9f27-8089b7c83dc3">As noted above, the skeleton entity returned must be a valid component as defined by the specifications. For example, a VEVENT MUST contain the DTSTAMP, DTSTART and UID properties as well as the STATUS: DELETED property. The DTSTAMP and DTSTART may be generated and the UID MUST be the UID of the deleted entity.</p>
+</clause>
+
+<clause id="_paging_the_response" inline-header="false" obligation="normative">
+<title>Paging the response</title>
+<p id="_1dd0afe9-b32f-3a96-bdfa-b056d32c23db">A client may explicitly request a limit on the size of the response by specifying the Prefer header field preference "limit=n" where n is the number of components.</p>
+
+<p id="_a756d5f2-25fd-ef38-a525-925f43144525">When a server receives a request specifying such a limit it SHOULD limit the response to that number of components. If the limit causes a truncation in the response the server should respond with a Preference-Applied header specifying the limit that was applied and return a sync token which may be used to retrieve the next batch of data.</p>
+
+<p id="_817b5825-5283-184f-6ae2-95644d24f726">This allows the client to immediately resubmit a request for the next batch using the updated token.</p>
+
+<p id="_d9fc434a-236e-86f3-df3b-d9b80dfbb205">A server MAY choose to limit the response size. The behavior MUST be as if the client had provided a preference for that size - allowing the client to retrieve the full set of data in batches.</p>
+
+<p id="_4919d63e-6a1b-b062-8721-356b9a3cd785">Note that the process above assumes that the current position in the resource is encoded in some way within the sync token.</p>
+</clause>
+
+<clause id="_caching_of_responses" inline-header="false" obligation="normative">
+<title>Caching of responses</title>
+<p id="_a3391045-094c-ed56-6bfe-f4e9059e3e30">To enable proper caching of responses the server SHOULD provide a Vary header field defined in  <eref type="inline" bibitemid="RFC7231" citeas="RFC 7231"><localityStack><locality type="section"><referenceFrom>7.1.4</referenceFrom></locality></localityStack></eref> in responses that names the Prefer and Sync-Token header fields along with any other that are appropriate.</p>
+
+<p id="_92935cf9-1c0e-1d4c-ae72-b1850cea2108">See <eref type="inline" bibitemid="RFC7240" citeas="RFC 7240"><localityStack><locality type="section"><referenceFrom>2</referenceFrom></locality></localityStack></eref> for a brief comment on use of Vary and Prefer.</p>
+</clause>
+
+<clause id="_examples" inline-header="false" obligation="normative">
+<title>Examples</title>
+<example id="_774dc637-96d9-1cda-d6df-cc86584ed270"><p id="_87846136-785a-36ce-2ffd-38a43722920b">This is an example of the initial request and response from a server that supports the enhanced GET method. Note the use of the Vary header so a caching proxy can key off the client's Sync-Token and preference.</p>
+
+<sourcecode id="_fb59ff80-6b61-bd4d-0ac2-91a03ec75791">    &gt;&gt; Request &lt;&lt;
+
+    GET /events.ics HTTP/1.1
+    Host: example.com
+    Accept: text/calendar
+    Prefer: subscribe-enhanced-get
+
+    &gt;&gt; Response &lt;&lt;
+
+    HTTP/1.1 200 OK
+    Content-Length: xxxx
+    Sync-Token: "data:,1234567"
+    Preference-Applied: subscribe-enhanced-get
+    Vary: Prefer, Sync-Token
+
+    BEGIN:VCALENDAR:
+    ?  /* full feed */
+    END:VCALENDAR</sourcecode>
+
+</example>
+
+<example id="_47cace8b-34a8-6598-918b-e0c249f38484"><p id="_9463a022-122e-7b11-7ebd-720850a0aa10">This is an example of the subsequent request and response when no changes have occurred.</p>
+
+<sourcecode id="_a7d81ed0-178d-e1e4-a990-187d93b6b24b">    &gt;&gt; Request &lt;&lt;
+
+    GET /events.ics HTTP/1.1
+    Host: example.com
+    Accept: text/calendar
+    Prefer: subscribe-enhanced-get
+    Sync-Token: "data:,1234567"
+
+    &gt;&gt; Response &lt;&lt;
+
+    HTTP/1.1 304 Not Modified
+    Content-Length: 0
+    Sync-Token: "data:,1234567"
+    Preference-Applied: subscribe-enhanced-get
+    Vary: Prefer, Sync-Token</sourcecode>
+
+</example>
+
+<example id="_b7365dcc-04c7-0ea2-d50b-1a4682a35064"><p id="_5eb02a1a-d4c5-1e3b-c88a-f2792d0a1569">This is an example of the subsequent request and response for an old or invalid token.</p>
+
+<sourcecode id="_f43b8917-fd19-a3d9-ceab-1ef97ec76901">&gt;&gt; Request &lt;&lt;
+
+    GET /events.ics HTTP/1.1
+    Host: example.com
+    Accept: text/calendar
+    Sync-Token: "data:,1234567"
+    Prefer: subscribe-enhanced-get
+
+    &gt;&gt; Response &lt;&lt;
+
+    HTTP/1.1 409 Conflict
+    Content-Length: xxxx
+    Preference-Applied: subscribe-enhanced-get</sourcecode>
+
+</example>
+
+<example id="_d4dde892-9fe7-46d8-d029-65877983f13a"><p id="_83f0a95b-13b1-c826-4dda-e52e2981f68a">This is an example of the subsequent request and response when changes have occurred.</p>
+
+<sourcecode id="_e42c952e-25e0-05d7-cc03-224a55afa2fb">&gt;&gt; Request &lt;&lt;
+
+    GET /events.ics HTTP/1.1
+    Host: example.com
+    Accept: text/calendar
+    Sync-Token: "data:,1234567"
+    Prefer: subscribe-enhanced-get
+
+    &gt;&gt; Response &lt;&lt;
+
+    HTTP/1.1 200 OK
+    Content-Type: text/calendar
+    Vary: Prefer, Sync-Token
+    Sync-Token: "data:,4567890"
+    Preference-Applied: subscribe-enhanced-get
+
+    BEGIN:VCALENDAR:
+    ... only new/changed events
+    ... deleted events have STATUS:DELETED
+    END:VCALENDAR</sourcecode>
+
+</example>
+</clause>
+</clause>
+
+<clause id="_changes_to_the_icalendar_specifications" inline-header="false" obligation="normative">
+<title>Changes to the iCalendar specifications</title>
+<p id="_29a22970-0efe-5133-74e1-e720597825a3">This specification updates <eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"/> to add the value DELETED to the STATUS property.</p>
+
+<clause id="_redefined_status_property" inline-header="false" obligation="normative">
+<title>Redefined Status property</title>
+<dl id="_2376f6bd-1915-02af-f7f9-f61928615aa7"><dt>Property name</dt>
+<dd><p id="_e9e2f11f-4444-7a4f-b16a-0f05fb524ed1">STATUS</p>
+</dd>
+<dt>Purpose</dt>
+<dd><p id="_54db6f7a-bb4f-cefb-0ce9-13fcdf15c629">This property defines the overall status or confirmation for the calendar component.</p>
+</dd>
+<dt>Value Type</dt>
+<dd><p id="_8a9da8ed-8e44-696b-d503-e81b518e6b26">TEXT</p>
+</dd>
+<dt>Property Parameters</dt>
+<dd><p id="_546412e7-ecbb-674a-c140-8200b980c395">IANA and non-standard property parameters can be specified on this property.</p>
+</dd>
+<dt>Conformance</dt>
+<dd><p id="_b43e48ff-e12c-0215-a7bb-6ef788657edb">This property can be specified once in "VEVENT", "VTODO", or "VJOURNAL" calendar components.</p>
+</dd>
+<dt>Description</dt>
+<dd><p id="_724a2909-1f33-d1d2-0ec4-2e891d834e05">In a group-scheduled calendar component, the property is used by the "Organizer" to provide a confirmation of the event to the "Attendees". For example in a "VEVENT" calendar component, the "Organizer" can indicate that a meeting is tentative, confirmed, or cancelled. In a "VTODO" calendar component, the "Organizer" can indicate that an action item needs action, is completed, is in process or being worked on, or has been cancelled. In a "VJOURNAL" calendar component, the "Organizer" can indicate that a journal entry is draft, final, or has been cancelled or removed.</p>
+</dd>
+<dt>Format Definition</dt>
+<dd/></dl>
+
+<p id="_231e90c1-ffec-e6b6-fc02-374775811317">This property is defined by the following notation:</p>
+
+<sourcecode id="_bb880c51-3a68-122e-1fb1-b95467c7139b" lang="abnf">status          = "STATUS" statparam ":" statvalue CRLF
+
+statparam       = *(";" other-param)
+
+statvalue       = (statvalue-event
+                /  statvalue-todo
+                /  statvalue-jour)
+
+statvalue-event = "TENTATIVE"    ;Indicates event is tentative.
+                / "CONFIRMED"    ;Indicates event is definite.
+                / "CANCELLED"    ;Indicates event was cancelled.
+                / "DELETED"      ;Indicates event was deleted.
+;Status values for a "VEVENT"
+
+statvalue-todo  = "NEEDS-ACTION" ;Indicates to-do needs action.
+                / "COMPLETED"    ;Indicates to-do completed.
+                / "IN-PROCESS"   ;Indicates to-do in process of.
+                / "CANCELLED"    ;Indicates to-do was cancelled.
+                / "DELETED"      ;Indicates to-do was deleted.
+;Status values for "VTODO".
+
+statvalue-jour  = "DRAFT"        ;Indicates journal is draft.
+                / "FINAL"        ;Indicates journal is final.
+                / "CANCELLED"    ;Indicates journal is removed.
+                / "DELETED"      ;Indicates journal was deleted.
+;Status values for "VJOURNAL".</sourcecode>
+
+
+<dl id="_4af90135-7a02-a2bd-4276-61911100b3e9"><dt>Example</dt>
+<dd/></dl>
+
+<example id="_525e1739-124b-fbc2-5091-b0ebb904af47"><p id="_5808d986-fa2e-86ae-ace1-9093968a678c">The following is an example of this property for a "VEVENT" calendar component:</p>
+
+<sourcecode id="_c0dd27ef-1c8a-67e0-7dbe-7252d490c0bd">STATUS:TENTATIVE</sourcecode>
+
+</example>
+
+<example id="_402337a1-5964-d422-064d-30351104807c"><p id="_a778f0fd-9344-d7e5-eb89-1d536eaec3b6">The following is an example of this property for a "VTODO" calendar component:</p>
+
+<sourcecode id="_a40b89c8-2fa2-a6ec-d4a4-b50ba9628627">STATUS:NEEDS-ACTION</sourcecode>
+
+</example>
+
+<example id="_31f6b1be-c12c-cfd7-3277-721e42d19d76"><p id="_bf091c78-5064-e1d6-ba67-6b72a3880c4a">The following is an example of this property for a "VJOURNAL" calendar component:</p>
+
+<sourcecode id="_0b6f8b10-982b-2466-e0d4-8ad397fe3821">STATUS:DRAFT</sourcecode>
+
+</example>
+</clause>
+</clause>
+
+<clause id="_header_field_sync_token" inline-header="false" obligation="normative">
+<title>Header Field: Sync-Token</title>
+<p id="_43ae483c-b315-f00a-d541-b45d784cf6bb">This specification defines a new header field Sync-Token for use by the enhanced GET method.</p>
+
+<sourcecode id="_15277a04-01af-b554-418f-3844684011da">    Sync-Token = DQUOTE URI DQUOTE</sourcecode>
+
+
+<p id="_e009b5bd-872a-6b02-7138-a2947134b92f">The value MUST be a URI. This will generally be a data URI representing an opaque token. Client MUST not attempt to interpret the data URI value.</p>
+
+<example id="_ec44ec93-612c-8ecd-a5b9-5d39a51e0fcc"><p id="_5fc60a4f-1c7d-41aa-bc78-43b7e3eda58e">This is an example of the Sync-Token header field:</p>
+
+<sourcecode id="_d67e1672-4859-a8ef-34fb-b29ff1ac90f2">    Sync-Token: "data:,1234567"</sourcecode>
+
+</example>
+</clause>
+
+<clause id="_new_prefer_header_field_preferences" inline-header="false" obligation="normative">
+<title>New Prefer header field preferences</title>
+<clause id="preference-subscribe" inline-header="false" obligation="normative">
+<title>Preference subscribe-enhanced-get</title>
+<p id="_142d59ab-6fcf-8c15-41ed-3fd04931d408">This indicates that the client expects the server to handle the GET method according to the specifications for enhanced get.</p>
+
+<sourcecode id="_f5698019-cf93-e904-d8c2-50d9ddfe952d">    pref-subscribe-enhanced-get = "subscribe-enhanced-get"</sourcecode>
+
+</clause>
+
+<clause id="preference-limit" inline-header="false" obligation="normative">
+<title>Preference limit</title>
+<p id="_df6822cd-b919-1b7a-094c-0235c379b634">This preference parameter provides a limit on the number of components returned for enhanced get.</p>
+
+<sourcecode id="_7b308c38-7eb5-5e02-a0a5-524d53fccda5">    pref-limit = "limit" BWS "=" BWS 1*DIGIT</sourcecode>
+
+</clause>
+</clause>
+
+<clause id="_link_relations" inline-header="false" obligation="normative">
+<title>Link relations</title>
+<clause id="_general_2" inline-header="false" obligation="normative">
+<title>General</title>
+<p id="_feb4c433-74a0-732f-8c5d-90a076292868">This clause defines a number of new link relations required to facilitate subscription upgrades.</p>
+</clause>
+
+<clause id="la-subscribe-caldav" inline-header="false" obligation="normative">
+<title>subscribe-caldav</title>
+<p id="_ca8a2bbd-0925-acc4-6c02-09413d0c0ac6">This specifies an access point which is a full implementation of caldav but requires no authentication. The end point allows the full range of reports as defined by the CalDAV specification.</p>
+
+<p id="_97c666a2-6aca-83e5-2504-e30555062b61">The client MUST follow the specification to determine exactly what operations are allowed on the access point - for example to determine if DAV:sync-collection is supported.</p>
+
+<p id="_2b85a59b-6994-a7d9-9b79-d0ea668c76d8">The URL MAY include some form of token to allow write access to the targeted collection. The client must check its permissions to determine whether it has been granted write access.</p>
+</clause>
+
+<clause id="la-subscribe-caldav-auth" inline-header="false" obligation="normative">
+<title>subscribe-caldav-auth</title>
+<p id="_a721d83f-98c8-74f0-9561-6f2dd7fed1e1">This specifies an access point which is a full implementation of caldav and requires authentication. This may allow read-write access to the resource.</p>
+
+<p id="_54623715-b068-a042-07c7-a4980d3551a1">The client MUST follow the specification to determine exactly what operations are allowed on the access point - for example to determine if DAV:sync-collection is supported.</p>
+</clause>
+
+<clause id="la-subscribe-webdav-sync" inline-header="false" obligation="normative">
+<title>subscribe-webdav-sync</title>
+<p id="_47e7db08-f047-fb4a-28fd-f22b5defb398">This specifies an access point which supports only webdav sync.</p>
+
+<p id="_fb4d2f27-640e-26e9-f82d-5db8aa3afce2">This allows the client to issue a DAV:sync-collection report on the resource to obtain updates.</p>
+
+<p id="_4e4f4535-737a-4e57-23a4-f37fc1854aca">The client MUST follow that specification.</p>
+</clause>
+
+<clause id="la-subscribe-enhanced-get" inline-header="false" obligation="normative">
+<title>subscribe-enhanced-get</title>
+<p id="_d89b9881-c46f-afce-b94e-268922f687f9">This specifies an access point which supports the enhanced GET protocol defined in  <xref target="enhanced-get"/>.</p>
+
+<p id="_81630ad2-6dbe-5bb1-8317-d7b5cd4ef7e8">The client and server MUST follow the protocol as defined in <xref target="enhanced-get"/>.</p>
+</clause>
+</clause>
+
+<clause id="security" inline-header="false" obligation="normative">
+<title>Security Considerations</title>
+<p id="_9dfbd2ba-5401-71e6-ed0e-453d40fa0452">Applications using these properties need to be aware of the risks entailed in using the URIs provided as values. See  <eref type="inline" bibitemid="RFC3986" citeas="RFC 3986"/> for a discussion of the security considerations relating to URIs.</p>
+</clause>
+
+<clause id="privacy" inline-header="false" obligation="normative">
+<title>Privacy Considerations</title>
+<p id="_d7b1353e-cd62-3e09-2929-c42275b5969a">Properties with a "URI" value type can expose their users to privacy leaks as any network access of the URI data can be tracked. Clients SHOULD NOT automatically download data referenced by the URI without explicit instruction from users. This specification does not introduce any additional privacy concerns beyond those described in <eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"/>.</p>
+</clause>
+
+<clause id="iana" inline-header="false" obligation="normative">
+<title>IANA Considerations</title>
+<clause id="_sync_token_http_header_field_registration" inline-header="false" obligation="normative">
+<title>Sync-Token HTTP Header Field Registration</title>
+<p id="_cb8c25cd-ed17-031d-8d14-163eba4d541c">This specification updates the "Message Headers" registry entry for "Sync-Token" in <eref type="inline" bibitemid="RFC3864" citeas="RFC 3864"/> to refer to this document.</p>
+
+<figure id="_e1081614-24cf-c9e6-4e69-acc72f77226a"><pre id="_1a838bb1-6167-79e3-3e59-01f1a26703cb">Header Field Name: Sync-Token
+Protocol: http
+Status: standard
+Reference: &lt;this-document&gt;</pre></figure>
+</clause>
+
+<clause id="_preference_registrations" inline-header="false" obligation="normative">
+<title>Preference Registrations</title>
+<p id="_d0ae35e3-3267-f0a4-a2e2-e739f99f7acd">The following preferences have been added to the HTTP Preferences Registry defined in <eref type="inline" bibitemid="RFC7240" citeas="RFC 7240"/></p>
+
+<dl id="_9ab424e4-fec2-8767-49db-48cb6a6536ec"><dt>Preference</dt>
+<dd><p id="_398088f0-0aea-76f8-dceb-459b8b9e20cd">subscribe-enhanced-get</p>
+</dd>
+<dt>Value</dt>
+<dd><p id="_35d36ba6-e725-ee1b-ded4-8cc1e93f792b">None.</p>
+</dd>
+<dt>Description</dt>
+<dd><p id="_142c16e7-e255-8b28-b829-61c5bd5a4771">Marks the interaction as enhanced get and provides the optional sync-token and page size.</p>
+</dd>
+<dt>Reference</dt>
+<dd><p id="_735cad53-c244-8619-cf86-0651ca91736a">this document</p>
+</dd>
+<dt>Preference</dt>
+<dd><p id="_22e49a7a-caaf-3b66-b618-c487a4a1ceeb">limit</p>
+</dd>
+<dt>Value</dt>
+<dd><p id="_1071526e-97c3-8946-8998-cd9d191c1f05">An integer page size.</p>
+</dd>
+<dt>Description</dt>
+<dd><p id="_b037c471-539b-b646-b3cb-db9c0ed44710">Provide a limit on the number of components in the response.</p>
+</dd>
+<dt>Reference</dt>
+<dd><p id="_b37c96b3-ad29-e83c-2d92-ee5782a2f94b">this document</p>
+</dd>
+</dl>
+</clause>
+
+<clause id="_link_relation_registrations" inline-header="false" obligation="normative">
+<title>Link Relation Registrations</title>
+<p id="_57b62f4b-dab9-9c97-bc46-a2223398d822">The following link relation values have been added to the Reference Types Registry defined in  <eref type="inline" bibitemid="RFC8288" citeas="RFC 8288"><localityStack><locality type="section"><referenceFrom>6.2.2</referenceFrom></locality></localityStack></eref>:</p>
+
+<table id="_c5fd32be-0085-fd46-0de0-75c9cf6e1558"><thead><tr><th valign="top" align="left">Relation Name</th>
+<th valign="top" align="left">Description</th>
+<th valign="top" align="left">Reference</th>
+</tr></thead>
+<tbody><tr><td valign="top" align="left"><p id="_cf90ab03-d8c7-b84e-92d7-a767f10b5043">subscribe-caldav</p>
+</td>
+<td valign="top" align="left"><p id="_73251bc8-2e49-3b70-024c-0155fdefc777">Current</p>
+</td>
+<td valign="top" align="left"><p id="_9fcf3fa2-062f-f68a-10a4-f110f2d6b414"><xref target="la-subscribe-caldav"/></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_42d3343a-e00c-0ca8-8e3e-b2251d38d3de">subscribe-caldav_auth</p>
+</td>
+<td valign="top" align="left"><p id="_9622f293-76ac-81af-5103-a174e3352399">Current</p>
+</td>
+<td valign="top" align="left"><p id="_8a1e0d25-e611-b848-0a18-101defbbe24c"><xref target="la-subscribe-caldav-auth"/></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_721951aa-3f14-1256-b13c-7b392a0c6832">subscribe-webdav-sync</p>
+</td>
+<td valign="top" align="left"><p id="_50fdd890-ca4a-b378-1f49-4921d1a56756">Current</p>
+</td>
+<td valign="top" align="left"><p id="_207793c7-21fd-61c8-1f6c-e6df60e9b0eb"><xref target="la-subscribe-webdav-sync"/></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_683fe659-18e5-0737-9d24-e4a3703aaadf">subscribe-enhanced_get</p>
+</td>
+<td valign="top" align="left"><p id="_19f4950c-7864-4389-3ce2-397a10882a9c">Current</p>
+</td>
+<td valign="top" align="left"><p id="_80240d2f-632b-825d-3580-759d3ddcb264"><xref target="la-subscribe-enhanced-get"/></p>
+</td>
+</tr></tbody>
+</table>
+</clause>
+
+<clause id="_new_and_updated_icalendar_elements_registration" inline-header="false" obligation="normative">
+<title>New and updated iCalendar Elements Registration</title>
+<p id="_a02f21a3-caf7-1b57-fff1-93062249f872">This specification updates <eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"/> by adding and updating a number of elements according to the procedures and templates specified in <eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>8.2</referenceFrom></locality></localityStack></eref>.</p>
+
+<clause id="_initialization_of_the_status_registry" inline-header="false" obligation="normative">
+<title>Initialization of the Status registry</title>
+<p id="_49b66124-11e8-fc97-0711-27dcc9e8d08c">This specification updates <eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"/> by adding a Status value registry to the iCalendar Elements registry located here:  <link target="https://www.iana.org/assignments/icalendar"/>&gt; and initializing it as per <eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"/>.</p>
+
+<table id="_65657308-7837-a18e-46cb-d607552828c7">
+<name>Initial Status Value Registry</name>
+<thead><tr><th valign="top" align="left">Name</th>
+<th valign="top" align="left">Status</th>
+<th valign="top" align="left">Reference</th>
+</tr></thead>
+<tbody><tr><td valign="top" align="left"><p id="_6f7b2314-e623-604e-5e70-5d313cdc57f4">CANCELLED</p>
+</td>
+<td valign="top" align="left"><p id="_10107f28-8665-83e9-02fe-8393e7b068ed">Current</p>
+</td>
+<td valign="top" align="left"><p id="_0765c987-d43f-cf99-0161-31938c5f1a72"><eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_f3d197db-717d-677d-69c5-69d20a1b99f9">COMPLETED</p>
+</td>
+<td valign="top" align="left"><p id="_3bcbb0c3-713d-2a12-babc-9c1c28412394">Current</p>
+</td>
+<td valign="top" align="left"><p id="_9f8fb4dd-9c05-028f-7810-db08e733d857"><eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_8f06525f-781d-3893-6be8-4264177c23e4">CONFIRMED</p>
+</td>
+<td valign="top" align="left"><p id="_8a6e9227-37db-63ad-65f9-99e60f31b874">Current</p>
+</td>
+<td valign="top" align="left"><p id="_bf81d825-f1ad-c6ea-6598-57f1c5e56b24"><eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_d3bcb09c-49ff-1f6d-8ffd-466e71222505">DRAFT</p>
+</td>
+<td valign="top" align="left"><p id="_af5c287f-0489-18a5-57df-c24e04806161">Current</p>
+</td>
+<td valign="top" align="left"><p id="_02bccbb9-1fc2-4ae0-c32a-b02adb6b30d5"><eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_39984d27-1984-fcd7-d19f-35c238a0312c">FINAL</p>
+</td>
+<td valign="top" align="left"><p id="_7abec697-7535-57b8-612e-f0309eecb970">Current</p>
+</td>
+<td valign="top" align="left"><p id="_47e0facf-2051-1e5d-f007-656505c67fb8"><eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_2a2ecf71-b47d-1ba1-d10e-178afc84c0f1">IN-PROCESS</p>
+</td>
+<td valign="top" align="left"><p id="_157c896a-1751-27c8-746c-8c821c36befb">Current</p>
+</td>
+<td valign="top" align="left"><p id="_6e7ff5ab-5d60-5b4d-7199-fb4af067847e"><eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_814313a1-d8f3-0166-26af-3fbe805b5e9c">NEEDS-ACTION</p>
+</td>
+<td valign="top" align="left"><p id="_4c6f5ba5-6e48-6b10-9111-0a7f2ac604fc">Current</p>
+</td>
+<td valign="top" align="left"><p id="_b9107741-d86a-3550-ce70-3361839f4f6e"><eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref></p>
+</td>
+</tr><tr><td valign="top" align="left"><p id="_99ccf917-2f23-4c45-6af9-6136b665245d">TENTATIVE</p>
+</td>
+<td valign="top" align="left"><p id="_5f7b5a2b-2da7-6104-be32-b8afbb8de300">Current</p>
+</td>
+<td valign="top" align="left"><p id="_00b0a7d3-fd52-741e-8529-f12ac7bca41d"><eref type="inline" bibitemid="RFC5545" citeas="RFC 5545"><localityStack><locality type="section"><referenceFrom>3.8.1.11</referenceFrom></locality></localityStack></eref></p>
+</td>
+</tr></tbody>
+</table>
+</clause>
+
+<clause id="_update_of_the_status_registry" inline-header="false" obligation="normative">
+<title>Update of the Status registry</title>
+<p id="_808cf423-e6ed-371d-1013-3bc1458a0063">This specification further updates the Status registry with the additional DELETED value defined in this document.</p>
+
+<table id="_a6e41e61-bc7e-4a5c-87a0-b45b6ae5d515">
+<name>Updated Status Value Registry</name>
+<thead><tr><th valign="top" align="left">Value</th>
+<th valign="top" align="left">Status</th>
+<th valign="top" align="left">Reference</th>
+</tr></thead>
+<tbody><tr><td valign="top" align="left"><p id="_7f7ebf2f-841e-d3f0-2cb2-99067ca17e38">DELETED</p>
+</td>
+<td valign="top" align="left"><p id="_7e62abe8-c658-772e-87d3-1f5e71a7ac3d">Current</p>
+</td>
+<td valign="top" align="left"><p id="_c67a9256-0b3a-e2ca-0cf1-823db93d4180">This Spec, <xref target="enhanced-get-deletion"/></p>
+</td>
+</tr></tbody>
+</table>
+</clause>
+</clause>
+</clause>
+
+<clause id="acknowledgements" inline-header="false" obligation="normative">
+<title>Acknowledgements</title>
+<p id="_ebe41a19-f81f-e531-744a-cc642670d648">The author would like to thank the members of the CalConnect Calendar Sharing technical committee and the following individuals for contributing their ideas and support:</p>
+
+<p id="_30857e01-7a79-00a0-0cdf-38ae126637a5">Marten Gajda, Ken Murchison, Garry Shutler</p>
+</clause>
+
+
+</sections><bibliography><references id="_normative_references" normative="true" obligation="informative">
+<title>Normative References</title>
+<bibitem id="RFC2119" type="standard" schema-version="v1.2.9">
+  <fetched>2024-10-16</fetched>
+  
+<title type="main" format="text/plain">Key words for use in RFCs to Indicate Requirement Levels</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc2119</uri>
+  <docidentifier type="IETF" primary="true">RFC 2119</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC2119</docidentifier>
+  <docnumber>RFC2119</docnumber>
+  <date type="published">
+    <on>1997-03</on>
+  </date>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">S. Bradner</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_349eae68-a8a3-0c01-e665-a6dc84c36d2e">In many standards track documents several words are used to signify the requirements in the specification. These words are often capitalized. This document defines these words as they should be interpreted in IETF documents. This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</p>
+
+  </abstract>
+  <series>
+    
+<title format="text/plain">BCP</title>
+
+    <number>14</number>
+  </series>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>2119</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>Standards</keyword>
+  <keyword>Track</keyword>
+  <keyword>Documents</keyword>
+</bibitem>
+<bibitem id="RFC3864" type="standard" schema-version="v1.2.9">
+  <fetched>2024-12-01</fetched>
+  
+<title type="main" format="text/plain">Registration Procedures for Message Header Fields</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc3864</uri>
+  <docidentifier type="IETF" primary="true">RFC 3864</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC3864</docidentifier>
+  <docnumber>RFC3864</docnumber>
+  <date type="published">
+    <on>2004-09</on>
+  </date>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">G. Klyne</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">M. Nottingham</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">J. Mogul</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_ee1c4301-911b-b061-8fc9-75bcd03179c4">This specification defines registration procedures for the message header fields used by Internet mail, HTTP, Netnews and other applications. This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</p>
+
+  </abstract>
+  <series>
+    
+<title format="text/plain">BCP</title>
+
+    <number>90</number>
+  </series>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>3864</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>Internet mail</keyword>
+  <keyword>HTTP</keyword>
+  <keyword>Netnews</keyword>
+</bibitem>
+<bibitem id="RFC3986" type="standard" schema-version="v1.2.9">
+  <fetched>2024-12-01</fetched>
+  
+<title type="main" format="text/plain">Uniform Resource Identifier (URI): Generic Syntax</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc3986</uri>
+  <docidentifier type="IETF" primary="true">RFC 3986</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC3986</docidentifier>
+  <docnumber>RFC3986</docnumber>
+  <date type="published">
+    <on>2005-01</on>
+  </date>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">T. Berners-Lee</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">R. Fielding</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">L. Masinter</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_376c3368-d608-47b6-e786-a6302d7ac515">A Uniform Resource Identifier (URI) is a compact sequence of characters that identifies an abstract or physical resource. This specification defines the generic URI syntax and a process for resolving URI references that might be in relative form, along with guidelines and security considerations for the use of URIs on the Internet. The URI syntax defines a grammar that is a superset of all valid URIs, allowing an implementation to parse the common components of a URI reference without knowing the scheme-specific requirements of every possible identifier. This specification does not define a generative grammar for URIs; that task is performed by the individual specifications of each URI scheme. [STANDARDS-TRACK]</p>
+
+  </abstract>
+  <relation type="updates">
+    <bibitem>
+      <formattedref format="text/plain">RFC1738</formattedref>
+      <docidentifier type="IETF" primary="true">RFC1738</docidentifier>
+    </bibitem>
+
+  </relation>
+  <series>
+    
+<title format="text/plain">STD</title>
+
+    <number>66</number>
+  </series>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>3986</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>Internet protocol</keyword>
+  <keyword>IP</keyword>
+  <keyword>uniform resource identifier</keyword>
+  <keyword>URI</keyword>
+  <keyword>www</keyword>
+  <keyword>world wide web</keyword>
+</bibitem>
+<bibitem id="RFC5545" type="standard" schema-version="v1.2.9">
+  <fetched>2024-10-16</fetched>
+  
+<title type="main" format="text/plain">Internet Calendaring and Scheduling Core Object Specification (iCalendar)</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc5545</uri>
+  <docidentifier type="IETF" primary="true">RFC 5545</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC5545</docidentifier>
+  <docnumber>RFC5545</docnumber>
+  <date type="published">
+    <on>2009-09</on>
+  </date>
+  <contributor>
+    <role type="editor"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">B. Desruisseaux</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_fa83dcfc-ee7d-310a-53f7-4a216170219f">This document defines the iCalendar data format for representing and exchanging calendaring and scheduling information such as events, to-dos, journal entries, and free/busy information, independent of any particular calendar service or protocol. [STANDARDS-TRACK]</p>
+
+  </abstract>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>5545</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>calsify</keyword>
+  <keyword>calsched</keyword>
+  <keyword>calsch</keyword>
+  <keyword>caldav</keyword>
+  <keyword>calendar</keyword>
+  <keyword>calendaring</keyword>
+  <keyword>meeting</keyword>
+  <keyword>event</keyword>
+  <keyword>task</keyword>
+  <keyword>to-do</keyword>
+  <keyword>journal</keyword>
+  <keyword>appointment</keyword>
+  <keyword>agenda</keyword>
+  <keyword>schedule</keyword>
+  <keyword>scheduling</keyword>
+  <keyword>ical</keyword>
+  <keyword>icalendar</keyword>
+  <keyword>itip</keyword>
+  <keyword>imip</keyword>
+  <keyword>text/calendar</keyword>
+  <keyword>ischedule</keyword>
+  <keyword>xCalendar</keyword>
+</bibitem>
+<bibitem id="RFC6578" type="standard" schema-version="v1.2.9">
+  <fetched>2024-12-01</fetched>
+  
+<title type="main" format="text/plain">Collection Synchronization for Web Distributed Authoring and Versioning (WebDAV)</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc6578</uri>
+  <docidentifier type="IETF" primary="true">RFC 6578</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC6578</docidentifier>
+  <docnumber>RFC6578</docnumber>
+  <date type="published">
+    <on>2012-03</on>
+  </date>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">C. Daboo</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">A. Quillaud</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_35d554c0-3679-95b4-b0bc-1e33c38aa956">This specification defines an extension to Web Distributed Authoring and Versioning (WebDAV) that allows efficient synchronization of the contents of a WebDAV collection. [STANDARDS-TRACK]</p>
+
+  </abstract>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>6578</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>sync-collection</keyword>
+  <keyword>sync-token</keyword>
+</bibitem>
+<bibitem id="RFC7231" type="standard" schema-version="v1.2.9">
+  <fetched>2024-12-01</fetched>
+  
+<title type="main" format="text/plain">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc7231</uri>
+  <docidentifier type="IETF" primary="true">RFC 7231</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC7231</docidentifier>
+  <docnumber>RFC7231</docnumber>
+  <date type="published">
+    <on>2014-06</on>
+  </date>
+  <contributor>
+    <role type="editor"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">R. Fielding</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="editor"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">J. Reschke</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_8ba8c4b2-9b65-f4ca-57bb-c490858ebfc1">The Hypertext Transfer Protocol (HTTP) is a stateless \%application- level protocol for distributed, collaborative, hypertext information systems. This document defines the semantics of HTTP/1.1 messages, as expressed by request methods, request header fields, response status codes, and response header fields, along with the payload of messages (metadata and body content) and mechanisms for content negotiation.</p>
+
+  </abstract>
+  <relation type="obsoletedBy">
+    <bibitem>
+      <formattedref format="text/plain">RFC9110</formattedref>
+      <docidentifier type="IETF" primary="true">RFC9110</docidentifier>
+    </bibitem>
+
+  </relation>
+  <relation type="updates">
+    <bibitem>
+      <formattedref format="text/plain">RFC2817</formattedref>
+      <docidentifier type="IETF" primary="true">RFC2817</docidentifier>
+    </bibitem>
+
+  </relation>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>7231</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>Hypertext Transfer Protocol</keyword>
+  <keyword>HTTP</keyword>
+  <keyword>HTTP semantics</keyword>
+  <keyword>HTTP payload</keyword>
+  <keyword>HTTP content</keyword>
+  <keyword>HTTP method</keyword>
+  <keyword>HTTP status code</keyword>
+</bibitem>
+<bibitem id="RFC7240" type="standard" schema-version="v1.2.9">
+  <fetched>2024-12-01</fetched>
+  
+<title type="main" format="text/plain">Prefer Header for HTTP</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc7240</uri>
+  <docidentifier type="IETF" primary="true">RFC 7240</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC7240</docidentifier>
+  <docnumber>RFC7240</docnumber>
+  <date type="published">
+    <on>2014-06</on>
+  </date>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">J. Snell</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_23bd17a1-fcd3-68e3-9448-b0fde5f65001">This specification defines an HTTP header field that can be used by a client to request that certain behaviors be employed by a server while processing a request.</p>
+
+  </abstract>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>7240</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>http</keyword>
+  <keyword>prefer</keyword>
+</bibitem>
+<bibitem id="RFC8174" type="standard" schema-version="v1.2.9">
+  <fetched>2024-12-01</fetched>
+  
+<title type="main" format="text/plain">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc8174</uri>
+  <docidentifier type="IETF" primary="true">RFC 8174</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC8174</docidentifier>
+  <docnumber>RFC8174</docnumber>
+  <date type="published">
+    <on>2017-05</on>
+  </date>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">B. Leiba</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_a2a67dcc-c0ea-f3a3-af38-52f883806949">RFC 2119 specifies common key words that may be used in protocol specifications. This document aims to reduce the ambiguity by clarifying that only UPPERCASE usage of the key words have the defined special meanings.</p>
+
+  </abstract>
+  <relation type="updates">
+    <bibitem>
+      <formattedref format="text/plain">RFC2119</formattedref>
+      <docidentifier type="IETF" primary="true">RFC2119</docidentifier>
+    </bibitem>
+
+  </relation>
+  <series>
+    
+<title format="text/plain">BCP</title>
+
+    <number>14</number>
+  </series>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>8174</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+</bibitem>
+<bibitem id="RFC8288" type="standard" schema-version="v1.2.9">
+  <fetched>2024-12-01</fetched>
+  
+<title type="main" format="text/plain">Web Linking</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc8288</uri>
+  <docidentifier type="IETF" primary="true">RFC 8288</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC8288</docidentifier>
+  <docnumber>RFC8288</docnumber>
+  <date type="published">
+    <on>2017-10</on>
+  </date>
+  <contributor>
+    <role type="author"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">M. Nottingham</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_df68328f-f9f0-ae57-1c10-5e3ac82d314c">This specification defines a model for the relationships between resources on the Web ("links") and the type of those relationships ("link relation types").</p>
+
+    <p id="_6cc2b822-5b3b-ef3e-1f94-24177258edf2">It also defines the serialisation of such links in HTTP headers with the Link header field.</p>
+
+  </abstract>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>8288</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>link relation</keyword>
+</bibitem>
+<bibitem id="RFC9110" type="standard" schema-version="v1.2.9">
+  <fetched>2024-12-01</fetched>
+  
+<title type="main" format="text/plain">HTTP Semantics</title>
+
+  <uri type="src">https://www.rfc-editor.org/info/rfc9110</uri>
+  <docidentifier type="IETF" primary="true">RFC 9110</docidentifier>
+  <docidentifier type="DOI">10.17487/RFC9110</docidentifier>
+  <docnumber>RFC9110</docnumber>
+  <date type="published">
+    <on>2022-06</on>
+  </date>
+  <contributor>
+    <role type="editor"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">R. Fielding</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="editor"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">M. Nottingham</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="editor"/>
+    <person>
+      
+<name>          <completename language="en" script="Latn">J. Reschke</completename>       </name>
+
+    </person>
+  </contributor>
+  <contributor>
+    <role type="publisher"/>
+    <organization>
+      
+<name>RFC Publisher</name>
+
+    </organization>
+  </contributor>
+  <contributor>
+    <role type="authorizer"/>
+    <organization>
+      
+<name>RFC Series</name>
+
+    </organization>
+  </contributor>
+  <language>en</language>
+  <script>Latn</script>
+  <abstract format="text/html" language="en" script="Latn">
+    <p id="_d6038fe8-7672-60fa-54c5-cfa873a886d9">The Hypertext Transfer Protocol (HTTP) is a stateless application-level protocol for distributed, collaborative, hypertext information systems. This document describes the overall architecture of HTTP, establishes common terminology, and defines aspects of the protocol that are shared by all versions. In this definition are core protocol elements, extensibility mechanisms, and the "http" and "https" Uniform Resource Identifier (URI) schemes.</p>
+
+    <p id="_7fb19ef4-5006-ca35-e86a-2ca15e97efc0">This document updates RFC 3864 and obsoletes RFCs 2818, 7231, 7232, 7233, 7235, 7538, 7615, 7694, and portions of 7230.</p>
+
+  </abstract>
+  <relation type="updates">
+    <bibitem>
+      <formattedref format="text/plain">RFC3864</formattedref>
+      <docidentifier type="IETF" primary="true">RFC3864</docidentifier>
+    </bibitem>
+
+  </relation>
+  <series>
+    
+<title format="text/plain">STD</title>
+
+    <number>97</number>
+  </series>
+  <series>
+    
+<title format="text/plain">RFC</title>
+
+    <number>9110</number>
+  </series>
+  <series type="stream">
+    
+<title format="text/plain">IETF</title>
+
+  </series>
+  <keyword>Hypertext Transfer Protocol</keyword>
+  <keyword>HTTP</keyword>
+  <keyword>HTTP semantics</keyword>
+  <keyword>HTTP content</keyword>
+  <keyword>HTTP method</keyword>
+  <keyword>HTTP status code</keyword>
+</bibitem>
+</references></bibliography>
+</ietf-standard>
