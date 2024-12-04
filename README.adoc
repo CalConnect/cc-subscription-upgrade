@@ -8,6 +8,18 @@ This document is available in its rendered forms here:
 
 * https://calconnect.github.io/cc-subscription-upgrade/[CalConnect+IETF: Calendaring and scheduling -- Calendar subscription upgrades]
 
+== General
+
+This document specifies a set of extensions to the iCalendar
+Transport-Independent Interoperability Protocol (iTIP) and the iCalendar
+Message-Based Interoperability Protocol (iMIP) to allow for the upgrade of
+calendar subscriptions.
+
+The document is published as the following:
+
+* CalConnect CC 56005
+* IETF draft-ietf-calext-subscription-upgrade
+
 
 == Structure
 
@@ -24,9 +36,12 @@ IETF draft-ietf-calext-subscription-upgrade, dual-published from CC 51005.
 (automatically generated using `metanorma site generate`) published document.
 
 
-== Usage
+== Fetching the document
 
-This repository uses Metanorma to generate documents.
+[source,sh]
+----
+git clone https://github.com/CalConnect/cc-itip-participants/
+----
 
 
 == Installing build tools
@@ -34,27 +49,49 @@ This repository uses Metanorma to generate documents.
 See https://www.metanorma.org/install/
 
 
-== Building the document
+== Running via Docker or locally
 
 If you have installed the build tools locally, and wish to run the
 locally-installed compilation tools, there is nothing further to set.
 
-If you use a locally installed Metanorma, run:
+If you don't want to deal with local dependencies, use the docker:
 
 [source,sh]
 ----
-metanorma site generate
+docker run -v "$(pwd)":/metanorma -w /metanorma -it metanorma/mn metanorma site generate --agree-to-terms
 ----
 
-If you don't want to deal with local dependencies, use the docker
-version by:
+
+== Building the document
 
 [source,sh]
 ----
-docker run -v "$(pwd)":/metanorma -w /metanorma -it metanorma/metanorma metanorma site generate
+metanorma site generate --agree-to-terms
+----
+
+The generated documents are accessible under `_site/`.
+
+
+== Iterating the document
+
+[source,sh]
+----
+metanorma site generate --agree-to-terms
+open _site/index.html
+----
+
+
+== IETF: Checking against idnits
+
+https://tools.ietf.org/tools/idnits/[idnits] is the RFC checking tool prior to
+submissions.
+
+[source,sh]
+----
+idnits draft-ietf-calext-subscription-upgrade.nits
 ----
 
 
 == License
 
-Copyright CalConnect.
+Copyright its respective authors and CalConnect.
