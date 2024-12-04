@@ -7,10 +7,13 @@
 
 This specification updates the "Message Headers" registry entry for "Sync-Token" in <<RFC3864>> to refer to this document.
 
+[source]
+----
    Header Field Name: Sync-Token
    Protocol: http
    Status: standard
    Reference: <this-document>
+----
 
 === Preference Registrations
 
@@ -60,6 +63,8 @@ a number of elements according to the procedures and templates specified in
 
 This specification updates <<RFC5545>> by adding a Status value registry to the iCalendar Elements registry
 located here: <https://www.iana.org/assignments/icalendar> and initializing it as per <<RFC5545>>.
+
+located here: <hello>.
 
 .Initial Status Value Registry
 [cols="a,a,a",options=header]
