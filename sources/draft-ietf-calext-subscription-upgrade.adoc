@@ -19,7 +19,6 @@
 :country: United States of America
 :uri: http://bedework.com
 :email: mdouglass@bedework.com
-:docfile: draft-ietf-calext-subscription-upgrade.adoc
 :mn-document-class: ietf
 :mn-output-extensions: xml,txt,html
 :technical-committee: TC Freebusy
@@ -27,22 +26,31 @@
 include::sections/00-abstract.adoc[]
 
 include::sections/00-intro.adoc[]
+
 include::sections-ietf/02-conventions.adoc[]
+
 //include::sections/03-terms.adoc[]
+
 include::sections/03.5-discovering.adoc[]
+
 include::sections/04-enhanced-get.adoc[]
+
 include::sections/05-changes.adoc[]
+
 include::sections/06-a-sync-token.adoc[]
+
 include::sections/06-prefer-header.adoc[]
+
 include::sections/08-link-relations.adoc[]
+
 include::sections/09-security.adoc[]
+
 include::sections/10-privacy.adoc[]
+
 include::sections/100-iana.adoc[]
 
 // TODO MD: acknowledgements should be in appendix
 include::sections/120-acknowledgements.adoc[]
 
 // must give references before appendix!
-
 include::sections-ietf/98-references.adoc[]
-
