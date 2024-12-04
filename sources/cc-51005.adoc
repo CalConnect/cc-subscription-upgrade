@@ -1,13 +1,12 @@
 = CalConnect Standard: Calendaring and scheduling -- Calendar subscription upgrades
-:title: Calendaring and scheduling -- Calendar subscription upgrades
-:fullname: Michael Douglass
-:firstname: Michael
-:surname: Douglass
 :docnumber: 51005
 :copyright-year: 2024
 :language: en
 :doctype: standard
 :edition: 1
+:fullname: Michael Douglass
+:firstname: Michael
+:surname: Douglass
 :status: committee-draft
 :revdate: 2024-12-01
 :published-date: 2024-12-01

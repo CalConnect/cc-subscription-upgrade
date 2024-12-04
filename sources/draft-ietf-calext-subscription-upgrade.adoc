@@ -20,8 +20,8 @@
 :uri: http://bedework.com
 :email: mdouglass@bedework.com
 :mn-document-class: ietf
-:mn-output-extensions: xml,txt,html
-:technical-committee: TC Freebusy
+:mn-output-extensions: rfc,xml,txt,html,rxl
+:technical-committee: TC FREEBUSY
 
 include::sections/00-abstract.adoc[]
 
