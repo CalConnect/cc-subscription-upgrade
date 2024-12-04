@@ -1,8 +1,10 @@
 ---
 metanorma:
-  deploy:
-    email: "ci@metanorma.org"
-relaton:
+  source:
+    files:
+      - sources/cc-51005.adoc
+      - sources/draft-ietf-calext-subscription-upgrade.adoc
+
   collection:
-    name: Calendar abuse
-    organization: CalConnect
+    organization: "CalConnect"
+    name: "iCalendar Subscription Upgrade"
