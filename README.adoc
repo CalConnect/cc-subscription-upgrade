@@ -1,64 +1,60 @@
-:repo-name: csd-subscription-upgrade
-
 = CalConnect Standard: Calendaring and scheduling -- Calendar subscription upgrades
 
 This work item belongs to TC FREEBUSY.
 
-image:https://github.com/CalConnect/csd-subscription-upgrade/workflows/publish/badge.svg["Build Status", link="https://github.com/CalConnect/csd-subscription-upgrade/actions?workflow=publish"]
+image:https://github.com/CalConnect/cc-subscription-upgrade/actions/workflows/generate.yml/badge.svg["Build Status", link="https://github.com/CalConnect/cc-subscription-upgrade/actions/workflows/generate.yml"]
 
 This document is available in its rendered forms here:
 
-* https://calconnect.github.io/csd-subscription-upgrade/[CalConnect+IETF: Calendaring and scheduling -- Calendar subscription upgrades]
-
-== Fetching the document
-
-[source,sh]
-----
-git clone https://github.com/CalConnect/csd-subscription-upgrade/
-----
-
-== Installing Build Tools
-
-See https://www.metanorma.com/author/topics/install/
+* https://calconnect.github.io/cc-subscription-upgrade/[CalConnect+IETF: Calendaring and scheduling -- Calendar subscription upgrades]
 
 
-== Running via Docker or locally
+== Structure
+
+`sources/`::
+source of documents and models
+
+`sources/cc-51005.adoc`::
+CalConnect CC 51005 standard.
+
+`sources/draft-ietf-calext-subscription-upgrade.adoc`::
+IETF draft-ietf-calext-subscription-upgrade, dual-published from CC 51005.
+
+`_site/`::
+(automatically generated using `metanorma site generate`) published document.
+
+
+== Usage
+
+This repository uses Metanorma to generate documents.
+
+
+== Installing build tools
+
+See https://www.metanorma.org/install/
+
+
+== Building the document
 
 If you have installed the build tools locally, and wish to run the
 locally-installed compilation tools, there is nothing further to set.
+
+If you use a locally installed Metanorma, run:
+
+[source,sh]
+----
+metanorma site generate
+----
 
 If you don't want to deal with local dependencies, use the docker
 version by:
 
 [source,sh]
 ----
-export METANORMA_DOCKER=1
+docker run -v "$(pwd)":/metanorma -w /metanorma -it metanorma/metanorma metanorma site generate
 ----
 
-The `Makefile` will automatically choose the proper command to
-execute.
 
+== License
 
-== Building The Document
-
-[source,sh]
-----
-make clean all
-----
-
-The following outputs will be built:
-
-* CSD XML (https://github.com/calconnect/metanorma-model-csd) (`[filename].xml`)
-* HTML (`[filename].html`)
-* PDF (`[filename].pdf`)
-* Word DOC (`[filename].doc`)
-
-
-== Iterating the document
-
-[source,sh]
-----
-make html
-open csd-*.html
-----
-
+Copyright CalConnect.
