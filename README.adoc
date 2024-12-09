@@ -38,10 +38,7 @@ IETF draft-ietf-calext-subscription-upgrade, dual-published from CC 51005.
 
 == Fetching the document
 
-[source,sh]
-----
-git clone https://github.com/CalConnect/cc-itip-participants/
-----
+Click on "Code > Local" to clone this repository.
 
 
 == Installing build tools
