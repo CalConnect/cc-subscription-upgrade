@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ietf-standard xmlns="https://www.metanorma.org/ns/ietf" type="semantic" version="3.4.0" schema-version="v1.4.0">
+<ietf-standard xmlns="https://www.metanorma.org/ns/ietf" type="semantic" version="3.4.3" schema-version="v1.4.1">
 <bibdata type="standard">
 <title language="en" format="text/plain" type="main">Calendar subscription upgrades</title>
-<uri>http://bedework.com</uri><docidentifier primary="true">draft-ietf-calext-subscription-upgrade-12</docidentifier><docnumber>draft-ietf-calext-subscription-upgrade-12</docnumber><contributor><role type="author"/><person>
+<uri>http://bedework.com</uri><docidentifier primary="true">draft-ietf-calext-subscription-upgrade-13</docidentifier><docnumber>draft-ietf-calext-subscription-upgrade-13</docnumber><contributor><role type="author"/><person>
 <name><completename>Michael Douglass</completename></name>
 <email>mdouglass@bedework.com</email></person></contributor><contributor><role type="publisher"/><organization>
 <name>Internet Engineering Task Force</name>
-<abbreviation>IETF</abbreviation></organization></contributor><version><revision-date>2024-12-01</revision-date></version><language>en</language><script>Latn</script><status><stage>standard</stage></status><copyright><from>2024</from><owner><organization>
+<abbreviation>IETF</abbreviation></organization></contributor><version><revision-date>2025-03-17</revision-date></version><language>en</language><script>Latn</script><status><stage>standard</stage></status><copyright><from>2025</from><owner><organization>
 <name>Internet Engineering Task Force</name>
 <abbreviation>IETF</abbreviation></organization></owner></copyright><relation type="updates"><bibitem>
 <title>--</title>
@@ -302,7 +302,7 @@ statvalue-jour  = "DRAFT"        ;Indicates journal is draft.
 <sourcecode id="_15277a04-01af-b554-418f-3844684011da">    Sync-Token = DQUOTE URI DQUOTE</sourcecode>
 
 
-<p id="_e009b5bd-872a-6b02-7138-a2947134b92f">The value MUST be a URI. This will generally be a data URI representing an opaque token. Client MUST not attempt to interpret the data URI value.</p>
+<p id="_4779d0f9-20f1-351b-f522-cd9bedcd43ea">The value MUST be a URI which could be a data URI. The synchronization token itself MUST be treated as an "opaque" string by the client, i.e., the actual string data has no specific meaning or syntax. These restrictions align the specification with <eref type="inline" bibitemid="RFC6578" citeas="RFC 6578"><localityStack><locality type="section"><referenceFrom>3.2</referenceFrom></locality></localityStack></eref>.</p>
 
 <example id="_ec44ec93-612c-8ecd-a5b9-5d39a51e0fcc"><p id="_5fc60a4f-1c7d-41aa-bc78-43b7e3eda58e">This is an example of the Sync-Token header field:</p>
 
@@ -355,11 +355,11 @@ statvalue-jour  = "DRAFT"        ;Indicates journal is draft.
 
 <clause id="la-subscribe-webdav-sync" inline-header="false" obligation="normative">
 <title>subscribe-webdav-sync</title>
-<p id="_47e7db08-f047-fb4a-28fd-f22b5defb398">This specifies an access point which supports only webdav sync.</p>
+<p id="_113f2a00-a680-5c1a-5d5e-53d777e0ab7c">This specifies an access point which supports only <eref type="inline" bibitemid="RFC6578" citeas="RFC 6578"/> (WebDAV sync).</p>
 
 <p id="_fb4d2f27-640e-26e9-f82d-5db8aa3afce2">This allows the client to issue a DAV:sync-collection report on the resource to obtain updates.</p>
 
-<p id="_4e4f4535-737a-4e57-23a4-f37fc1854aca">The client MUST follow that specification.</p>
+<p id="_90659120-1afe-3282-0b68-7c211789e809">The client MUST follow the requirements of <eref type="inline" bibitemid="RFC6578" citeas="RFC 6578"/>.</p>
 </clause>
 
 <clause id="la-subscribe-enhanced-get" inline-header="false" obligation="normative">
@@ -386,10 +386,11 @@ statvalue-jour  = "DRAFT"        ;Indicates journal is draft.
 <title>Sync-Token HTTP Header Field Registration</title>
 <p id="_cb8c25cd-ed17-031d-8d14-163eba4d541c">This specification updates the "Message Headers" registry entry for "Sync-Token" in <eref type="inline" bibitemid="RFC3864" citeas="RFC 3864"/> to refer to this document.</p>
 
-<figure id="_e1081614-24cf-c9e6-4e69-acc72f77226a"><pre id="_1a838bb1-6167-79e3-3e59-01f1a26703cb">Header Field Name: Sync-Token
-Protocol: http
-Status: standard
-Reference: &lt;this-document&gt;</pre></figure>
+<sourcecode id="_de683114-4413-5365-e2b8-b3cbea046111">   Header Field Name: Sync-Token
+   Protocol: http
+   Status: standard
+   Reference: &lt;this-document&gt;</sourcecode>
+
 </clause>
 
 <clause id="_preference_registrations" inline-header="false" obligation="normative">
@@ -558,7 +559,7 @@ Reference: &lt;this-document&gt;</pre></figure>
 </sections><bibliography><references id="_normative_references" normative="true" obligation="informative">
 <title>Normative References</title>
 <bibitem id="RFC2119" type="standard" schema-version="v1.2.9">
-  <fetched>2024-10-16</fetched>
+  <fetched>2025-02-24</fetched>
   
 <title type="main" format="text/plain">Key words for use in RFCs to Indicate Requirement Levels</title>
 
@@ -621,7 +622,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   <keyword>Documents</keyword>
 </bibitem>
 <bibitem id="RFC3864" type="standard" schema-version="v1.2.9">
-  <fetched>2024-12-01</fetched>
+  <fetched>2025-03-17</fetched>
   
 <title type="main" format="text/plain">Registration Procedures for Message Header Fields</title>
 
@@ -700,7 +701,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   <keyword>Netnews</keyword>
 </bibitem>
 <bibitem id="RFC3986" type="standard" schema-version="v1.2.9">
-  <fetched>2024-12-01</fetched>
+  <fetched>2025-03-17</fetched>
   
 <title type="main" format="text/plain">Uniform Resource Identifier (URI): Generic Syntax</title>
 
@@ -789,7 +790,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   <keyword>world wide web</keyword>
 </bibitem>
 <bibitem id="RFC5545" type="standard" schema-version="v1.2.9">
-  <fetched>2024-10-16</fetched>
+  <fetched>2025-02-24</fetched>
   
 <title type="main" format="text/plain">Internet Calendaring and Scheduling Core Object Specification (iCalendar)</title>
 
@@ -865,7 +866,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   <keyword>xCalendar</keyword>
 </bibitem>
 <bibitem id="RFC6578" type="standard" schema-version="v1.2.9">
-  <fetched>2024-12-01</fetched>
+  <fetched>2025-03-17</fetched>
   
 <title type="main" format="text/plain">Collection Synchronization for Web Distributed Authoring and Versioning (WebDAV)</title>
 
@@ -929,7 +930,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   <keyword>sync-token</keyword>
 </bibitem>
 <bibitem id="RFC7231" type="standard" schema-version="v1.2.9">
-  <fetched>2024-12-01</fetched>
+  <fetched>2025-03-17</fetched>
   
 <title type="main" format="text/plain">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</title>
 
@@ -1012,7 +1013,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   <keyword>HTTP status code</keyword>
 </bibitem>
 <bibitem id="RFC7240" type="standard" schema-version="v1.2.9">
-  <fetched>2024-12-01</fetched>
+  <fetched>2025-03-17</fetched>
   
 <title type="main" format="text/plain">Prefer Header for HTTP</title>
 
@@ -1068,7 +1069,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   <keyword>prefer</keyword>
 </bibitem>
 <bibitem id="RFC8174" type="standard" schema-version="v1.2.9">
-  <fetched>2024-12-01</fetched>
+  <fetched>2025-02-24</fetched>
   
 <title type="main" format="text/plain">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</title>
 
@@ -1135,7 +1136,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   </series>
 </bibitem>
 <bibitem id="RFC8288" type="standard" schema-version="v1.2.9">
-  <fetched>2024-12-01</fetched>
+  <fetched>2025-03-17</fetched>
   
 <title type="main" format="text/plain">Web Linking</title>
 
@@ -1192,7 +1193,7 @@ Reference: &lt;this-document&gt;</pre></figure>
   <keyword>link relation</keyword>
 </bibitem>
 <bibitem id="RFC9110" type="standard" schema-version="v1.2.9">
-  <fetched>2024-12-01</fetched>
+  <fetched>2025-03-17</fetched>
   
 <title type="main" format="text/plain">HTTP Semantics</title>
 

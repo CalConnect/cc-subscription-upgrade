@@ -3,14 +3,14 @@
 
 
 Network Working Group                                        M. Douglass
-Internet-Draft                                           1 December 2024
+Internet-Draft                                             17 March 2025
 Updates: 5545 (if approved)                                             
 Intended status: Standards Track                                        
-Expires: 4 June 2025
+Expires: 18 September 2025
 
 
                      Calendar subscription upgrades
-               draft-ietf-calext-subscription-upgrade-12
+               draft-ietf-calext-subscription-upgrade-13
 
 Abstract
 
@@ -36,11 +36,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 June 2025.
+   This Internet-Draft will expire on 18 September 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 1]
+Douglass                Expires 18 September 2025               [Page 1]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -85,12 +85,12 @@ Table of Contents
      6.1.  Preference subscribe-enhanced-get . . . . . . . . . . . .  10
      6.2.  Preference limit  . . . . . . . . . . . . . . . . . . . .  10
    7.  Link relations  . . . . . . . . . . . . . . . . . . . . . . .  10
-     7.1.  General . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     7.1.  General . . . . . . . . . . . . . . . . . . . . . . . . .  11
      7.2.  subscribe-caldav  . . . . . . . . . . . . . . . . . . . .  11
      7.3.  subscribe-caldav-auth . . . . . . . . . . . . . . . . . .  11
      7.4.  subscribe-webdav-sync . . . . . . . . . . . . . . . . . .  11
      7.5.  subscribe-enhanced-get  . . . . . . . . . . . . . . . . .  11
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  12
    9.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .  12
    10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
      10.1.  Sync-Token HTTP Header Field Registration  . . . . . . .  12
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 2]
+Douglass                Expires 18 September 2025               [Page 2]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
 1.  Introduction
@@ -165,9 +165,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 3]
+Douglass                Expires 18 September 2025               [Page 3]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
    These LINK headers will be delivered when a client carries out a HEAD
@@ -221,9 +221,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 4]
+Douglass                Expires 18 September 2025               [Page 4]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
    If the token is valid, it SHOULD return with a set of changed
@@ -277,9 +277,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 5]
+Douglass                Expires 18 September 2025               [Page 5]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
    This allows the client to immediately resubmit a request for the next
@@ -333,9 +333,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 6]
+Douglass                Expires 18 September 2025               [Page 6]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
    EXAMPLE 2
@@ -389,9 +389,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 7]
+Douglass                Expires 18 September 2025               [Page 7]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
    >> Request <<
@@ -445,9 +445,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 8]
+Douglass                Expires 18 September 2025               [Page 8]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
       cancelled.  In a "VJOURNAL" calendar component, the "Organizer"
@@ -501,9 +501,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                  [Page 9]
+Douglass                Expires 18 September 2025               [Page 9]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
    STATUS:NEEDS-ACTION
@@ -522,9 +522,11 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
        Sync-Token = DQUOTE URI DQUOTE
 
-   The value MUST be a URI.  This will generally be a data URI
-   representing an opaque token.  Client MUST not attempt to interpret
-   the data URI value.
+   The value MUST be a URI which could be a data URI.  The
+   synchronization token itself MUST be treated as an "opaque" string by
+   the client, i.e., the actual string data has no specific meaning or
+   syntax.  These restrictions align the specification with Section 3.2
+   of [RFC6578].
 
    EXAMPLE
 
@@ -550,17 +552,20 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 7.  Link relations
 
+
+
+
+
+
+Douglass                Expires 18 September 2025              [Page 10]
+
+Internet-Draft       Calendar subscription upgrades           March 2025
+
+
 7.1.  General
 
    This clause defines a number of new link relations required to
    facilitate subscription upgrades.
-
-
-
-Douglass                   Expires 4 June 2025                 [Page 10]
-
-Internet-Draft       Calendar subscription upgrades        December 2024
-
 
 7.2.  subscribe-caldav
 
@@ -588,12 +593,13 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 7.4.  subscribe-webdav-sync
 
-   This specifies an access point which supports only webdav sync.
+   This specifies an access point which supports only [RFC6578] (WebDAV
+   sync).
 
    This allows the client to issue a DAV:sync-collection report on the
    resource to obtain updates.
 
-   The client MUST follow that specification.
+   The client MUST follow the requirements of [RFC6578].
 
 7.5.  subscribe-enhanced-get
 
@@ -603,20 +609,20 @@ Internet-Draft       Calendar subscription upgrades        December 2024
    The client and server MUST follow the protocol as defined in
    Section 3.
 
+
+
+
+
+Douglass                Expires 18 September 2025              [Page 11]
+
+Internet-Draft       Calendar subscription upgrades           March 2025
+
+
 8.  Security Considerations
 
    Applications using these properties need to be aware of the risks
    entailed in using the URIs provided as values.  See [RFC3986] for a
    discussion of the security considerations relating to URIs.
-
-
-
-
-
-Douglass                   Expires 4 June 2025                 [Page 11]
-
-Internet-Draft       Calendar subscription upgrades        December 2024
-
 
 9.  Privacy Considerations
 
@@ -634,12 +640,10 @@ Internet-Draft       Calendar subscription upgrades        December 2024
    This specification updates the "Message Headers" registry entry for
    "Sync-Token" in [RFC3864] to refer to this document.
 
-   Header Field Name: Sync-Token
-   Protocol: http
-   Status: standard
-   Reference: <this-document>
-
-                                  Figure 1
+      Header Field Name: Sync-Token
+      Protocol: http
+      Status: standard
+      Reference: <this-document>
 
 10.2.  Preference Registrations
 
@@ -662,17 +666,15 @@ Internet-Draft       Calendar subscription upgrades        December 2024
    Description  Provide a limit on the number of components in the
       response.
 
-   Reference  this document
 
 
 
-
-
-
-Douglass                   Expires 4 June 2025                 [Page 12]
+Douglass                Expires 18 September 2025              [Page 12]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
+
+   Reference  this document
 
 10.3.  Link Relation Registrations
 
@@ -723,11 +725,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-
-
-Douglass                   Expires 4 June 2025                 [Page 13]
+Douglass                Expires 18 September 2025              [Page 13]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
         +==============+=========+===============================+
@@ -781,9 +781,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                 [Page 14]
+Douglass                Expires 18 September 2025              [Page 14]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -837,9 +837,9 @@ Internet-Draft       Calendar subscription upgrades        December 2024
 
 
 
-Douglass                   Expires 4 June 2025                 [Page 15]
+Douglass                Expires 18 September 2025              [Page 15]
 
-Internet-Draft       Calendar subscription upgrades        December 2024
+Internet-Draft       Calendar subscription upgrades           March 2025
 
 
 Author's Address
@@ -893,4 +893,4 @@ Author's Address
 
 
 
-Douglass                   Expires 4 June 2025                 [Page 16]
+Douglass                Expires 18 September 2025              [Page 16]
