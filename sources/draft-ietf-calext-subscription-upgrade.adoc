@@ -1,6 +1,6 @@
 = Calendar subscription upgrades
 :doctype: internet-draft
-:docnumber: draft-ietf-calext-subscription-upgrade-12
+:docnumber: draft-ietf-calext-subscription-upgrade-13
 :status: standard
 :ipr: trust200902
 :consensus: true
@@ -8,7 +8,7 @@
 :submission-type: IETF
 :area: Internet
 :intended-series: full-standard
-:revdate: 2024-12-01
+:revdate: 2025-03-17
 :fullname: Michael Douglass
 :lastname: Douglass
 :forename_initials: M.

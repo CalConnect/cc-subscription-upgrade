@@ -8,9 +8,11 @@ the enhanced GET method.
     Sync-Token = DQUOTE URI DQUOTE
 ----
 
-The value MUST be a URI. This will generally be a data URI
-representing an opaque token. Client MUST not attempt to interpret
-the data URI value.
+The value MUST be a URI which could be a data URI.
+The synchronization token itself MUST be treated as an "opaque"
+string by the client, i.e., the actual string data has no specific
+meaning or syntax. These restrictions align the specification with
+<<RFC6578, section=3.2>>.
 
 [example]
 --

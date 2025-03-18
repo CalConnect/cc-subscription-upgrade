@@ -37,12 +37,12 @@ if DAV:sync-collection is supported.
 [[la-subscribe-webdav-sync]]
 === subscribe-webdav-sync
 
-This specifies an access point which supports only webdav sync.
+This specifies an access point which supports only <<RFC6578>> (WebDAV sync).
 
 This allows the client to issue a DAV:sync-collection report on the resource to
 obtain updates.
 
-The client MUST follow that specification.
+The client MUST follow the requirements of <<RFC6578>>.
 
 
 [[la-subscribe-enhanced-get]]
