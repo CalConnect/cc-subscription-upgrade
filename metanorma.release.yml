@@ -1,3 +1,5 @@
+# metanorma.release.yml — cc-subscription-upgrade
+
 documents:
-  - source: sources/cc-51005.adoc
-  - source: sources/draft-ietf-calext-subscription-upgrade.adoc
+  - pattern: "cc-*"
+    channels: [public/standards]

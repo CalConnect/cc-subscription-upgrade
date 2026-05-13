@@ -1,0 +1,5 @@
+# .metanorma/channels.yml — cc-subscription-upgrade
+
+channels:
+  - name: public/standards
+    description: "CalConnect documents from cc-subscription-upgrade"
