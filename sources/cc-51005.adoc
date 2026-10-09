@@ -22,6 +22,12 @@ include::sections/00-abstract.adoc[]
 
 include::sections/00-foreword.adoc[]
 
+[abstract]
+== Abstract
+
+This document provides a mechanism to allow subscribers to calendar feeds to upgrade to a more performant protocol.
+
+
 include::sections/00-intro.adoc[]
 
 include::sections/01-scope.adoc[]
